@@ -1,0 +1,42 @@
+package rishav.example.SpringRestDemo.util.AppUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import javax.imageio.ImageIO;
+
+import java.awt.image.BufferedImage;
+import org.imgscalr.Scalr;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.web.multipart.MultipartFile;
+
+public class AppUtil {
+
+    public static String get_photo_upload_path(String filename, String folder_name, long album_id) throws Exception {
+        String path = "src\\main\\resources\\static\\uploads\\" + album_id + "\\" + folder_name;
+        Files.createDirectories(Paths.get(path));
+        return new File(path).getAbsolutePath() + "\\" + filename;
+    }
+
+    public static BufferedImage getThumbnail(MultipartFile originalFile, Integer width) throws Exception {
+        BufferedImage thumbImg = null;
+        BufferedImage img = ImageIO.read(originalFile.getInputStream());
+        thumbImg = Scalr.resize(img, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, width, Scalr.OP_ANTIALIAS);
+        return thumbImg;
+    }
+
+    public static Resource getFileAsResource(long album_id, String folder_name, String file_name) throws IOException {
+        String location = "src\\main\\resources\\static\\uploads\\" + album_id + "\\" + folder_name + "\\" + file_name;
+        File file = new File(location);
+        if (file.exists()) {
+            Path path = Paths.get(file.getAbsolutePath());
+            return new UrlResource(path.toUri());
+        } else {
+            return null;
+        }
+    }
+}
